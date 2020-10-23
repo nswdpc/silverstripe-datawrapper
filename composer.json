@@ -1,0 +1,34 @@
+{
+    "name": "nswdpc/silverstripe-datawrapper",
+    "description": "Module providing Datawrapper chart and map support",
+    "type": "silverstripe-vendormodule",
+    "keywords": [
+        "silverstripe",
+        "datawrapper",
+        "charts",
+        "maps",
+        "nsw",
+        "iframe",
+        "elemental"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "James Ellis",
+            "homepage": "https://dpc.nsw.gov.au",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "nswdpc/silverstripe-elemental-iframe":"dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7 | ^7",
+        "squizlabs/php_codesniffer": "^3.0"
+    },
+    "extra": {
+        "expose": [
+            "client/static"
+        ]
+    }
+}

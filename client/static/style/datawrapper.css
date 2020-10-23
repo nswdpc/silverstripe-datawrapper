@@ -1,0 +1,8 @@
+/**
+ * Datawrapper styles
+ */
+iframe.dw {
+  width: 0;
+  min-width: 100% !important;
+  border: none;
+}
