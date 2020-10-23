@@ -1,10 +1,10 @@
 <?php
 
-namespace  NSWDPC\Elemental\Tests\QuickGallery;
+namespace  NSWDPC\Elemental\Tests\Datawrapper;
 
 use gorriecoe\Link\Models\Link;
 use gorriecoe\LinkField\LinkField;
-use NSWDPC\Elemental\Models\Iframe\ElementIframe;
+use NSWDPC\Elemental\Models\Datawrapper\ElementDatawrapper;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use Silverstripe\Assets\Dev\TestAssetStore;
@@ -32,14 +32,6 @@ class DatawrapperTest extends SapphireTest
     }
 
     public function testIframe() {
-
-        Config::inst()->update(
-            ElementIframe::class,
-            'default_allow_attributes',
-            [
-                'fullscreen'
-            ]
-        );
 
         $width = 300;
         $height = 200;

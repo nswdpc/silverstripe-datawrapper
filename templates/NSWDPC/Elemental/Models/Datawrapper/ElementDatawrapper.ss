@@ -10,6 +10,8 @@
                 src="{$DatawrapperURL.XML}"
                 scrolling="no"
                 frameborder="0"
+                <% if $DefaultAllowAttributes %>allow="$DefaultAllowAttributes"<% end_if %>
+                <% if $IsLazy %>loading="lazy"<% end_if %>
                 height="{$IframeHeight.XML}">
             </iframe>
         <% if $IsLazy %></noscript><% end_if %>
