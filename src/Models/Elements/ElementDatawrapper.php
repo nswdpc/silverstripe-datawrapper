@@ -2,7 +2,10 @@
 
 namespace NSWDPC\Elemental\Models\Datawrapper;
 
+use SilverStripe\Control\Director;
+use NSWDPC\Datawrapper\Webhook;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
+use Silverstripe\Control\Director;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationException;
@@ -29,11 +32,13 @@ class ElementDatawrapper extends ElementIframe {
 
     private static $db = [
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
-        'DatawrapperVersion' => 'Int'
+        'DatawrapperVersion' => 'Int',
+        'AutoPublish' => 'Boolean',
     ];
 
     private static $defaults = [
-        'DatawrapperVersion' => 1
+        'DatawrapperVersion' => 1,
+        'AutoPublish' => 0,
     ];
 
     public function getType()
@@ -90,6 +95,19 @@ class ElementDatawrapper extends ElementIframe {
         return $id;
     }
 
+    protected function getWebookURL() {
+        $enabled = Config::inst()->get(Webhook::class,'webhooks_enabled');
+        if(!$enabled) {
+            return false;
+        }
+        $code = Config::inst()->get(Webhook::class,'webhooks_random_code');
+        $path = "_datawrapperwebhook/submit/";
+        if($code) {
+            $path .= "{$code}/";
+        }
+        return Director::Director::absoluteURL($path);
+    }
+
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         $fields->removeByName([
@@ -125,6 +143,31 @@ class ElementDatawrapper extends ElementIframe {
             )->setAttribute('required','required'),
             'IsLazy'
         );
+
+        $webhook_url = $this->getWebookURL();
+        if(!$webhook_url) {
+            $fields->removeByName('AutoPublish');
+        } else {
+            $fields->addFieldToTab(
+                'Root.Main',
+                CheckboxField::create(
+                    'AutoPublish',
+                    'Auto publish'
+                )->setDescription(
+                    _t(
+                        __CLASS__ . '.DW_AUTOPUBLISH',
+                        "If checked, when the chart is published at Datawrapper this element will be published."
+                        . "<br>"
+                        . "The parent item of this element will not be auto-published"
+                        . "<br>"
+                        . "Ensure the following URL is configured as a custom webhook at Datawrapper: {url}",
+                        [
+                            "url" => $webhook_url
+                        ]
+                    )
+                )
+            );
+        }
 
         return $fields;
     }
