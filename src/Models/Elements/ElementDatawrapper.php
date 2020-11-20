@@ -2,11 +2,11 @@
 
 namespace NSWDPC\Elemental\Models\Datawrapper;
 
-use SilverStripe\Control\Director;
-use NSWDPC\Datawrapper\Webhook;
+use BurnBright\ExternalURLField\ExternalURLField;
+use NSWDPC\Datawrapper\WebhookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
-use Silverstripe\Control\Director;
 use SilverStripe\Forms\NumericField;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationException;
 use Silverstripe\View\ArrayData;
@@ -29,6 +29,8 @@ class ElementDatawrapper extends ElementIframe {
 
     private static $title = 'Datawrapper element';
     private static $description = 'Display Datawrapper content';
+
+    private static $default_host = 'datawrapper.dwcdn.net';
 
     private static $db = [
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
@@ -70,19 +72,74 @@ class ElementDatawrapper extends ElementIframe {
         $this->IsFullWidth = 1;//DW elements are always full width
         $this->IsResponsive = 1;//DW elements are always responsive
         $this->URLID = 0;// DW URLs are generated based on the ID, this field is removed
-        if($this->DatawrapperVersion <= 0) {
-            throw new ValidationException("Datawrapper version should be a number >= 1");
-        }
-        if($this->DatawrapperId == "") {
-            throw new ValidationException("Please provide a Datawrapper ID");
+
+        $this->setPartsFromUrl();
+
+    }
+
+    /**
+     * Set required parts from the URL saved
+     * @return void
+     */
+    protected function setPartsFromUrl() {
+        if(empty($this->InputURL)) {
+            $this->DatawrapperId = '';
+            $this->DatawrapperVersion = 1;
+        } else {
+
+            $path = trim( trim( parse_url( $this->InputURL, PHP_URL_PATH ), "/"));
+            $path_parts = explode("/", $path);
+            if(count($path_parts) != 2) {
+                throw new ValidationException(
+                    _t(
+                        __CLASS__ . '.URL_NOT_HTTPS',
+                        'The Datawrapper path must have a 5 character Datawrapper chart Id and a version number. The URL provided was {url}',
+                        [
+                            'url' => $this->InputURL
+                        ]
+                    )
+                );
+            }
+
+            if(strlen($path_parts[0]) != 5) {
+                throw new ValidationException(
+                    _t(
+                        __CLASS__ . '.URL_NOT_HTTPS',
+                        'The Datawrapper chart Id must be 5 characters long'
+                    )
+                );
+            }
+
+            $version = intval($path_parts[1]);
+            if($version < 1) {
+                throw new ValidationException(
+                    _t(
+                        __CLASS__ . '.URL_NOT_HTTPS',
+                        'The Datawrapper version must be >= 1'
+                    )
+                );
+            }
+
+            $this->DatawrapperId = $path_parts[0];
+            $this->DatawrapperVersion = $version;
+
+
         }
     }
 
+    /**
+     * Return the datawrapper URL
+     */
     public function DatawrapperURL() {
         if(!$this->DatawrapperId) {
             return "";
         }
-        $url = "https://datawrapper.dwcdn.net/"
+        if(!$this->DatawrapperVersion || $this->DatawrapperVersion <= 1) {
+            $this->DatawrapperVersion = 1;
+        }
+        $url = "https://"
+                . $this->config()->get('default_host')
+                . "/"
                 . $this->DatawrapperId
                 . "/"
                 . $this->DatawrapperVersion
@@ -95,56 +152,32 @@ class ElementDatawrapper extends ElementIframe {
         return $id;
     }
 
-    protected function getWebookURL() {
-        $enabled = Config::inst()->get(Webhook::class,'webhooks_enabled');
-        if(!$enabled) {
-            return false;
-        }
-        $code = Config::inst()->get(Webhook::class,'webhooks_random_code');
-        $path = "_datawrapperwebhook/submit/";
-        if($code) {
-            $path .= "{$code}/";
-        }
-        return Director::Director::absoluteURL($path);
-    }
-
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         $fields->removeByName([
-            'URL',
             'IsResponsive',
             'Width',
+            'DatawrapperId',
+            'DatawrapperVersion',
         ]);
 
         $fields->addFieldToTab(
             'Root.Main',
-            TextField::create(
-                'DatawrapperId',
-                'Datawrapper Id'
-            )->setDescription(
-                _t(
-                    __CLASS__ . '.DW_ID_DESCRIPTION',
-                    "If the URL provided is https://datawrapper.dwcdn.net/abcd1/10/, the Id is 'abcd1'"
-                )
-            )->setAttribute('required','required'),
-            'IsLazy'
+            ExternalURLField::create(
+                'InputURL',
+                'Datawrapper embed URL',
+                $this->DatawrapperURL()
+            )->setDescription("In the format 'https://datawrapper.dwcdn.net/abc12/1/'")
+            ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
+            ->setConfig([
+                'html5validation' => true,
+                'defaultparts' => [
+                    'scheme' => 'https'
+                ]
+            ])->setInputType('url')
         );
 
-        $fields->addFieldToTab(
-            'Root.Main',
-            NumericField::create(
-                'DatawrapperVersion',
-                'Datawrapper version'
-            )->setDescription(
-                _t(
-                    __CLASS__ . '.DW_VERSION_DESCRIPTION',
-                    "If the URL provided is https://datawrapper.dwcdn.net/abcd1/13/, the version is '13'"
-                )
-            )->setAttribute('required','required'),
-            'IsLazy'
-        );
-
-        $webhook_url = $this->getWebookURL();
+        $webhook_url = WebhookController::getWebookURL();
         if(!$webhook_url) {
             $fields->removeByName('AutoPublish');
         } else {
@@ -157,10 +190,10 @@ class ElementDatawrapper extends ElementIframe {
                     _t(
                         __CLASS__ . '.DW_AUTOPUBLISH',
                         "If checked, when the chart is published at Datawrapper this element will be published."
-                        . "<br>"
+                        . "<br><br>"
                         . "The parent item of this element will not be auto-published"
-                        . "<br>"
-                        . "Ensure the following URL is configured as a custom webhook at Datawrapper: {url}",
+                        . "<br><br>"
+                        . "Ensure the following URL is configured as a custom webhook at Datawrapper<br><br>{url}",
                         [
                             "url" => $webhook_url
                         ]

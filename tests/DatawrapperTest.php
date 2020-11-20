@@ -78,4 +78,8 @@ class DatawrapperTest extends SapphireTest
 
     }
 
+    public function testwebHook() {
+        $url = Webhook::getWebookURL();
+    }
+
 }

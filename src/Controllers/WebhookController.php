@@ -4,6 +4,7 @@ namespace NSWDPC\Datawrapper;
 
 use NSWDPC\Elemental\Models\Datawrapper\ElementDatawrapper;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 
@@ -12,13 +13,26 @@ use SilverStripe\Control\HTTPResponse;
  * To create a webhook URL, see the README.md
  * @author James <james.ellis@dpc.nsw.gov.au>
  */
-class WebHook extends Controller {
+class WebHookController extends Controller {
 
     private static $webhooks_enabled = true;
 
     private static $allowed_actions = [
         'submit' => true
     ];
+
+    public static function getWebookURL() {
+        $enabled = self::config()->get('webhooks_enabled');
+        if(!$enabled) {
+            return false;
+        }
+        $code = self::config()->get('webhooks_random_code');
+        $path = "_datawrapperwebhook/submit/";
+        if($code) {
+            $path .= "{$code}/";
+        }
+        return Director::absoluteURL($path);
+    }
 
     protected function getResponseBody($success = true) {
         $data = [
@@ -31,7 +45,6 @@ class WebHook extends Controller {
      * We have done something wrong
      */
     protected function serverError($status_code = 503, $message = "") {
-        Log::log($message, \Psr\Log\LogLevel::NOTICE);
         $response = HTTPResponse::create( $this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
         return $response;
@@ -41,7 +54,6 @@ class WebHook extends Controller {
      * Client (being Mailgun user agent) has done something wrong
      */
     protected function clientError($status_code  = 400, $message = "") {
-        Log::log($message, \Psr\Log\LogLevel::NOTICE);
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
         return $response;
@@ -63,19 +75,24 @@ class WebHook extends Controller {
         return $this->clientError(404, "Not Found");
     }
 
+    /**
+     * @return bool
+     */
     protected function webhooksEnabled() {
         return $this->config()->get('webhooks_enabled');
     }
 
     /**
-     * Test whether the random code matches what is configured;
+     * Test whether the random code sent in the request matches what is configured
+     * @return bool
      */
     protected function webhookRandomCodeMatch(HTTPRequest $request) {
         $code = $this->config()->get('webhooks_random_code');
         if(!$code) {
             return true;
         }
-        print_r($request->allParams());
+        $request_code = $request->param('ID');
+        return $request_code = $code;
     }
 
     /**
@@ -90,7 +107,7 @@ class WebHook extends Controller {
                 throw new \Exception("Not enabled", 503);
             }
 
-            if(!$this->webhookRandomCodeMatch()) {
+            if(!$this->webhookRandomCodeMatch($request)) {
                 throw new \Exception("Forbidden", 403);
             }
 
@@ -130,7 +147,7 @@ class WebHook extends Controller {
             $this->returnOK();
 
         } catch (\Exception $e) {
-
+            return $this->clientError($e->getCode(), $e->getMessage());
         }
 
     }
