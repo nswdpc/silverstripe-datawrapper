@@ -1,6 +1,6 @@
 ---
 Name: nswdpc-datawrapper
 ---
-NSWDPC\Datawrapper\Webhook:
+NSWDPC\Datawrapper\WebhookController:
   webhooks_enabled: true
   webhooks_random_code: ''

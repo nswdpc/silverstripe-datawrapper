@@ -161,8 +161,7 @@ class ElementDatawrapper extends ElementIframe {
             'DatawrapperVersion',
         ]);
 
-        $fields->addFieldToTab(
-            'Root.Main',
+        $fields->insertAfter(
             ExternalURLField::create(
                 'InputURL',
                 'Datawrapper embed URL',
@@ -174,31 +173,32 @@ class ElementDatawrapper extends ElementIframe {
                 'defaultparts' => [
                     'scheme' => 'https'
                 ]
-            ])->setInputType('url')
+            ])->setInputType('url'),
+            'Title'
         );
 
         $webhook_url = WebhookController::getWebookURL();
         if(!$webhook_url) {
             $fields->removeByName('AutoPublish');
         } else {
-            $fields->addFieldToTab(
-                'Root.Main',
+            $fields->insertAfter(
                 CheckboxField::create(
                     'AutoPublish',
                     'Auto publish'
                 )->setDescription(
                     _t(
                         __CLASS__ . '.DW_AUTOPUBLISH',
-                        "If checked, when the chart is published at Datawrapper this element will be published."
-                        . "<br><br>"
+                        "If checked, when the chart is published at Datawrapper, this element will be published."
+                        . "<br>"
                         . "The parent item of this element will not be auto-published"
-                        . "<br><br>"
+                        . "<br>"
                         . "Ensure the following URL is configured as a custom webhook at Datawrapper<br><br>{url}",
                         [
                             "url" => $webhook_url
                         ]
                     )
-                )
+                ),
+                'InputURL'
             );
         }
 

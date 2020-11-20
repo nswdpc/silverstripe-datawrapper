@@ -5,4 +5,4 @@ After:
 ---
 Silverstripe\Control\Director:
   rules:
-    '_datawrapperwebhook//$Action/$ID/$OtherID': 'NSWDPC\Datawrapper\WebHook'
+    '_datawrapperwebhook//$Action/$ID/$OtherID': 'NSWDPC\Datawrapper\WebhookController'

@@ -7,6 +7,7 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use Silverstripe\Versioned\Versioned;
 
 /**
  * Controller for handling webhook submissions from Datawrapper
@@ -16,6 +17,8 @@ use SilverStripe\Control\HTTPResponse;
 class WebHookController extends Controller {
 
     private static $webhooks_enabled = true;
+
+    private static $webhooks_random_code = '';
 
     private static $allowed_actions = [
         'submit' => true
@@ -34,9 +37,10 @@ class WebHookController extends Controller {
         return Director::absoluteURL($path);
     }
 
-    protected function getResponseBody($success = true) {
+    protected function getResponseBody($success = true, $count = 0) {
         $data = [
-            'success' => $success
+            'success' => $success,
+            'count' => $count
         ];
         return json_encode($data);
     }
@@ -62,8 +66,8 @@ class WebHookController extends Controller {
     /**
      * All is good
      */
-    protected function returnOK($status_code  = 200, $message = "OK") {
-        $response = HTTPResponse::create($this->getResponseBody(true), $status_code);
+    protected function returnOK($status_code  = 200, $message = "OK", $count = 0) {
+        $response = HTTPResponse::create($this->getResponseBody(true, $count), $status_code);
         $response->addHeader('Content-Type', 'application/json');
         return $response;
     }
@@ -92,7 +96,7 @@ class WebHookController extends Controller {
             return true;
         }
         $request_code = $request->param('ID');
-        return $request_code = $code;
+        return $request_code == $code;
     }
 
     /**
@@ -137,14 +141,22 @@ class WebHookController extends Controller {
             }
 
             // there may be many
-            $elements = ElementDatawrapper::get()->filter('DatawrapperId', $id)
-                                                ->filter('DatawrapperVersion:LessThan', $public_version);
-            foreach($elements as $element) {
-                // publish the element
-                $element->doPublish();
+            $elements = Versioned::get_by_stage(ElementDatawrapper::class, Versioned::DRAFT)
+                                                ->filter('DatawrapperId', $id)
+                                                // only get those that are marked to auto publish
+                                                ->filter('AutoPublish', 1);
+
+            $count = $elements->count();
+            if($count > 0) {
+                foreach($elements as $element) {
+                    // publish the element
+                    $element->DatawrapperVersion = $public_version;
+                    $element->write();
+                    $element->doPublish();
+                }
             }
 
-            $this->returnOK();
+            return $this->returnOK(200, "OK", $count);
 
         } catch (\Exception $e) {
             return $this->clientError($e->getCode(), $e->getMessage());
