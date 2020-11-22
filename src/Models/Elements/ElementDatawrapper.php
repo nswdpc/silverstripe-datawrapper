@@ -57,24 +57,24 @@ class ElementDatawrapper extends ElementIframe {
             ArrayData::create([])->renderWith('NSWDPC/Elemental/Models/Datawrapper/ResponsiveScript'),
             'datawrapper-repsonsive-script'
         );
-
         Requirements::css(
             'nswdpc/silverstripe-datawrapper:client/static/style/datawrapper.css',
             'screen'
         );
-
         return parent::forTemplate($holder);
     }
 
+    /**
+     * Handle default settings prior to write
+     */
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
         $this->IsFullWidth = 1;//DW elements are always full width
+        $this->Width = "100%";// DW elements are always full width
         $this->IsResponsive = 1;//DW elements are always responsive
-        $this->URLID = 0;// DW URLs are generated based on the ID, this field is removed
-
+        $this->URLID = 0;// DW URLs are generated based on the provided embed URL, link module not used
         $this->setPartsFromUrl();
-
     }
 
     /**
@@ -82,17 +82,14 @@ class ElementDatawrapper extends ElementIframe {
      * @return void
      */
     protected function setPartsFromUrl() {
-        if(empty($this->InputURL)) {
-            $this->DatawrapperId = '';
-            $this->DatawrapperVersion = 1;
-        } else {
+        if(!empty($this->InputURL)) {
 
             $path = trim( trim( parse_url( $this->InputURL, PHP_URL_PATH ), "/"));
             $path_parts = explode("/", $path);
             if(count($path_parts) != 2) {
                 throw new ValidationException(
                     _t(
-                        __CLASS__ . '.URL_NOT_HTTPS',
+                        __CLASS__ . '.DW_URL_NOT_VALID',
                         'The Datawrapper path must have a 5 character Datawrapper chart Id and a version number. The URL provided was {url}',
                         [
                             'url' => $this->InputURL
@@ -104,7 +101,7 @@ class ElementDatawrapper extends ElementIframe {
             if(strlen($path_parts[0]) != 5) {
                 throw new ValidationException(
                     _t(
-                        __CLASS__ . '.URL_NOT_HTTPS',
+                        __CLASS__ . '.DW_ID_CHR_LENGTH',
                         'The Datawrapper chart Id must be 5 characters long'
                     )
                 );
@@ -114,7 +111,7 @@ class ElementDatawrapper extends ElementIframe {
             if($version < 1) {
                 throw new ValidationException(
                     _t(
-                        __CLASS__ . '.URL_NOT_HTTPS',
+                        __CLASS__ . '.DW_URL_VERSION_FAILURE',
                         'The Datawrapper version must be >= 1'
                     )
                 );
@@ -123,12 +120,12 @@ class ElementDatawrapper extends ElementIframe {
             $this->DatawrapperId = $path_parts[0];
             $this->DatawrapperVersion = $version;
 
-
         }
     }
 
     /**
      * Return the datawrapper URL
+     * @return string
      */
     public function DatawrapperURL() {
         if(!$this->DatawrapperId) {
@@ -147,16 +144,25 @@ class ElementDatawrapper extends ElementIframe {
         return $url;
     }
 
+    /**
+     * Return the "id" attribute for a DW element
+     * Note that only one element per DatawrapperId can exist on a single page or "id" clashes will happen
+     * @return string
+     */
     public function DatawrapperIdAttribute() {
-        $id = "datawrapper-chart-" . $this->DatawrapperId;
+        $id = "datawrapper-chart-{$this->DatawrapperId}";
         return $id;
     }
 
+    /**
+     * Set up fields for editor content updates
+     */
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         $fields->removeByName([
             'IsResponsive',
-            'Width',
+            'Width',// the item width cannot be changed, it is always 100%
+            'IsFullWidth',// this item is always full width
             'DatawrapperId',
             'DatawrapperVersion',
         ]);
@@ -164,7 +170,7 @@ class ElementDatawrapper extends ElementIframe {
         $fields->insertAfter(
             ExternalURLField::create(
                 'InputURL',
-                'Datawrapper embed URL',
+                _t(__CLASS__ . ".DW_URL_NOT_EMBED_CODE", 'Datawrapper \'fullscreen share URL\' (not the embed code)'),
                 $this->DatawrapperURL()
             )->setDescription("In the format 'https://datawrapper.dwcdn.net/abc12/1/'")
             ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
@@ -188,11 +194,11 @@ class ElementDatawrapper extends ElementIframe {
                 )->setDescription(
                     _t(
                         __CLASS__ . '.DW_AUTOPUBLISH',
-                        "If checked, when the chart is published at Datawrapper, this element will be published."
+                        "If checked, this element will be published when the chart is published at Datawrapper, "
                         . "<br>"
-                        . "The parent item of this element will not be auto-published"
+                        . "The parent item of this element will not be published at the same time"
                         . "<br>"
-                        . "Ensure the following URL is configured as a custom webhook at Datawrapper<br><br>{url}",
+                        . "To enable this feature, please ensure the following URL is configured as a custom webhook in the relevant Team at Datawrapper<br><br>{url}",
                         [
                             "url" => $webhook_url
                         ]
