@@ -24,6 +24,22 @@ class WebHookController extends Controller {
         'submit' => true
     ];
 
+    /**
+     * Return link to this controller
+     * @return string
+     */
+    public function Link($action = null) {
+        if($link = self::getWebookURL()) {
+            return $link;
+        }
+        return "";
+    }
+
+    /**
+     * Return the URL (absolute) for webhook submissions
+     * If webhooks are not enabled, this will return boolean false
+     * @return string|bool
+     */
     public static function getWebookURL() {
         $enabled = self::config()->get('webhooks_enabled');
         if(!$enabled) {
@@ -37,6 +53,11 @@ class WebHookController extends Controller {
         return Director::absoluteURL($path);
     }
 
+    /**
+     * Return the response body for a webhook submission
+     * The two keys are 'success' being a boolean, count being the number of items changed
+     * @return string JSON encoded value
+     */
     protected function getResponseBody($success = true, $count = 0) {
         $data = [
             'success' => $success,
@@ -47,6 +68,7 @@ class WebHookController extends Controller {
 
     /**
      * We have done something wrong
+     * @return HTTPResponse
      */
     protected function serverError($status_code = 503, $message = "") {
         $response = HTTPResponse::create( $this->getResponseBody(false), $status_code);
@@ -56,6 +78,7 @@ class WebHookController extends Controller {
 
     /**
      * Client (being Mailgun user agent) has done something wrong
+     * @return HTTPResponse
      */
     protected function clientError($status_code  = 400, $message = "") {
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
@@ -65,6 +88,7 @@ class WebHookController extends Controller {
 
     /**
      * All is good
+     * @return HTTPResponse
      */
     protected function returnOK($status_code  = 200, $message = "OK", $count = 0) {
         $response = HTTPResponse::create($this->getResponseBody(true, $count), $status_code);
@@ -73,13 +97,15 @@ class WebHookController extends Controller {
     }
 
     /**
-     * Ignore / requests
+     * Ignore requests to /
+     * @return HTTPResponse
      */
     public function index($request) {
         return $this->clientError(404, "Not Found");
     }
 
     /**
+     * Returns whether webhooks are enabled in Configuration
      * @return bool
      */
     protected function webhooksEnabled() {
@@ -140,18 +166,22 @@ class WebHookController extends Controller {
                 throw new \Exception("Missing id or publicVersion parameter in POST");
             }
 
-            // there may be many
+            /**
+             * Retrieve Datawrapper elements from the draft stage, that can be autopublised
+             * Matching the ID sent through
+             */
             $elements = Versioned::get_by_stage(ElementDatawrapper::class, Versioned::DRAFT)
-                                                ->filter('DatawrapperId', $id)
-                                                // only get those that are marked to auto publish
-                                                ->filter('AutoPublish', 1);
+                            ->filter('DatawrapperId', $id)
+                            // only get those that are marked to auto publish
+                            ->filter('AutoPublish', 1);
 
             $count = $elements->count();
             if($count > 0) {
                 foreach($elements as $element) {
-                    // publish the element
+                    // update with the new publicVersion
                     $element->DatawrapperVersion = $public_version;
                     $element->write();
+                    // publish the element
                     $element->doPublish();
                 }
             }
