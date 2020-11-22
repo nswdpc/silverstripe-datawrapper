@@ -1,0 +1,8 @@
+---
+Name: nswdpc-datawrapper-routes
+After:
+  - '#coreroutes'
+---
+Silverstripe\Control\Director:
+  rules:
+    '_datawrapperwebhook//$Action/$ID/$OtherID': 'NSWDPC\Datawrapper\WebhookController'

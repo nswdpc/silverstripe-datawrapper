@@ -18,6 +18,19 @@ See [composer.json](./composer.json)
 composer require nswdpc/silverstripe-datawrapper
 ```
 
+Until this module appears in Packagist, add a repository entry:
+
+```json
+"repositories": [
+    {
+        "type" : "vcs",
+        "url" : "https://github.com/nswdpc/silverstripe-datawrapper.git"
+    }
+    ...
+]
+```
+
+
 ## License
 
 [BSD-3-Clause](./LICENSE.md)

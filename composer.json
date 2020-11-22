@@ -20,7 +20,8 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-elemental-iframe":"dev-master"
+        "nswdpc/silverstripe-elemental-iframe":"dev-master",
+        "fromholdio/silverstripe-externalurlfield": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7 | ^7",
