@@ -23,10 +23,10 @@ POST /webhook HTTP/1.1
 content-type: application/json
 content-length: 32
 
-{"id":"zPrsY","publicVersion":1}
+{"id":"abcd1","publicVersion":6}
 ```
 
-You can use a system such as Pipedream to inspect incoming requests.
+You can use a system such as Pipedream to inspect and debug webhook requests.
 
 
 ## Turning off/on
@@ -41,4 +41,4 @@ NSWDPC\Datawrapper\Webhook:
 
 Use `webhooks_random_code` to randomise the URL. Using this example, the submission URL will look something like `https://mysite.example.com/_datawrapperwebhook/submit/some_random_code_string/`
 
-This is empty by default. It's a good idea to have this as anyone who knows the URL and a Datawrapper chart ID you are using will be able to submit webhook requests.
+This is empty by default. It's a good idea to have this value set as anyone who knows the URL and a Datawrapper chart ID you are using will be able to submit webhook requests.
