@@ -11,7 +11,7 @@ To create an element, the chart or map first needs to be created in Datawrapper
 3. Edit the chart or map as required (refer to the Datawrapper Academy documentation for assistance)
 4. Once published you will need to take the embed URL (below) and add it to the element in the CMS
 
-## Datawrapper content id & version
+## The Datawrapper URL
 
 In the "Share & Embed" section on your chart/map:
 
