@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-elemental-iframe":"^0.1",
+        "nswdpc/silverstripe-elemental-iframe":"^0.2",
         "fromholdio/silverstripe-externalurlfield": "~1.0"
     },
     "require-dev": {
