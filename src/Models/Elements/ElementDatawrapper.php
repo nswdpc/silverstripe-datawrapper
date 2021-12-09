@@ -181,6 +181,7 @@ class ElementDatawrapper extends ElementIframe {
         ]);
 
         $fields->insertAfter(
+            'Title',
             UrlField::create(
                 'InputURL',
                 _t(
@@ -191,8 +192,7 @@ class ElementDatawrapper extends ElementIframe {
             )->setDescription("In the format <code>https://datawrapper.dwcdn.net/abc12/1/</code>")
             ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
             ->restrictToHttps()
-            ->setRequiredParts(['scheme','host','path']),
-            'Title'
+            ->setRequiredParts(['scheme','host','path'])
         );
 
         $webhook_url = WebhookController::getWebookURL();
@@ -200,6 +200,7 @@ class ElementDatawrapper extends ElementIframe {
             $fields->removeByName('AutoPublish');
         } else {
             $fields->insertAfter(
+                'InputURL',
                 CheckboxField::create(
                     'AutoPublish',
                     'Auto publish'
@@ -215,8 +216,7 @@ class ElementDatawrapper extends ElementIframe {
                             "url" => $webhook_url
                         ]
                     )
-                ),
-                'InputURL'
+                )
             );
         }
 
