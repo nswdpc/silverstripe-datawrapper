@@ -34,6 +34,7 @@ class ElementDatawrapper extends ElementIframe {
     private static $default_host = 'datawrapper.dwcdn.net';
 
     private static $db = [
+        'Content' => 'HTMLText',
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
         'DatawrapperVersion' => 'Int',
         'AutoPublish' => 'Boolean',
@@ -216,6 +217,14 @@ class ElementDatawrapper extends ElementIframe {
                     )
                 ),
                 'InputURL'
+            );
+        }
+
+        $contentField = $fields->dataFieldByName('Content');
+        if($contentField) {
+            $fields->insertAfter(
+                'AutoPublish',
+                $contentField
             );
         }
 
