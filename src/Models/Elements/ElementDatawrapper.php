@@ -25,11 +25,11 @@ class ElementDatawrapper extends ElementIframe {
 
     private static $inline_editable = false;
 
-    private static $singular_name = 'Datawrapper element';
-    private static $plural_name = 'Datawrapper elements';
+    private static $singular_name = 'Datawrapper visualisation';
+    private static $plural_name = 'Datawrapper visualisations';
 
-    private static $title = 'Datawrapper element';
-    private static $description = 'Display Datawrapper content';
+    private static $title = 'Datawrapper visualisation';
+    private static $description = 'Display a Datawrapper visualisation';
 
     private static $default_host = 'datawrapper.dwcdn.net';
 
@@ -47,7 +47,7 @@ class ElementDatawrapper extends ElementIframe {
 
     public function getType()
     {
-        return _t(__CLASS__ . '.BlockType', 'Datawrapper');
+        return _t(__CLASS__ . '.BlockType', 'Datawrapper visualisation');
     }
 
     /**
