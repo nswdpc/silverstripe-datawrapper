@@ -170,9 +170,12 @@ class ElementDatawrapper extends ElementIframe {
         $fields->insertAfter(
             UrlField::create(
                 'InputURL',
-                _t(__CLASS__ . ".DW_URL_NOT_EMBED_CODE", 'Datawrapper \'fullscreen share URL\' (not the embed code)'),
+                _t(
+                    __CLASS__ . ".DW_URL_LINK_TO_VISUALISATION",
+                    'The Datawrapper \'Link to your visualisation:\' URL (Visualisation only option)'
+                ),
                 $this->DatawrapperURL()
-            )->setDescription("In the format 'https://datawrapper.dwcdn.net/abc12/1/'")
+            )->setDescription("In the format <code>https://datawrapper.dwcdn.net/abc12/1/</code>")
             ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
             ->restrictToHttps()
             ->setRequiredParts(['scheme','host','path']),
@@ -194,7 +197,7 @@ class ElementDatawrapper extends ElementIframe {
                         . "<br>"
                         . "The parent item of this element will not be published at the same time"
                         . "<br>"
-                        . "To enable this feature, please ensure the following URL is configured as a custom webhook in the relevant Team at Datawrapper<br><br>{url}",
+                        . "To enable this feature, please ensure the following URL is configured as a custom webhook in the relevant Team at Datawrapper: <code>{url}</code>",
                         [
                             "url" => $webhook_url
                         ]
