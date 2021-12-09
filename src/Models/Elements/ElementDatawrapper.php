@@ -2,7 +2,7 @@
 
 namespace NSWDPC\Elemental\Models\Datawrapper;
 
-use BurnBright\ExternalURLField\ExternalURLField;
+use Codem\Utilities\HTML5\UrlField;
 use NSWDPC\Datawrapper\WebhookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\NumericField;
@@ -168,18 +168,14 @@ class ElementDatawrapper extends ElementIframe {
         ]);
 
         $fields->insertAfter(
-            ExternalURLField::create(
+            UrlField::create(
                 'InputURL',
                 _t(__CLASS__ . ".DW_URL_NOT_EMBED_CODE", 'Datawrapper \'fullscreen share URL\' (not the embed code)'),
                 $this->DatawrapperURL()
             )->setDescription("In the format 'https://datawrapper.dwcdn.net/abc12/1/'")
             ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
-            ->setConfig([
-                'html5validation' => true,
-                'defaultparts' => [
-                    'scheme' => 'https'
-                ]
-            ])->setInputType('url'),
+            ->restrictToHttps()
+            ->setRequiredParts(['scheme','host','path']),
             'Title'
         );
 
