@@ -75,6 +75,7 @@ class ElementDatawrapper extends ElementIframe {
         $this->Width = "100%";// DW elements are always full width
         $this->IsResponsive = 1;//DW elements are always responsive
         $this->URLID = 0;// DW URLs are generated based on the provided embed URL, link module not used
+        $this->IsDynamic = 0;// iframe module turn off IsDynamic, DW provides its own.
         $this->setPartsFromUrl();
     }
 
@@ -168,6 +169,9 @@ class ElementDatawrapper extends ElementIframe {
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         $fields->removeByName([
+            'URL',// link field
+            'URLID',// link field
+            'IsDynamic',// remove auto resize field from iframe
             'IsResponsive',
             'Width',// the item width cannot be changed, it is always 100%
             'IsFullWidth',// this item is always full width
