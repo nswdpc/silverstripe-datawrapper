@@ -8,6 +8,7 @@ use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ValidationException;
 use Silverstripe\View\ArrayData;
 use SilverStripe\View\Requirements;
@@ -152,6 +153,13 @@ class ElementDatawrapper extends ElementIframe {
     public function DatawrapperIdAttribute() {
         $id = "datawrapper-chart-{$this->DatawrapperId}";
         return $id;
+    }
+
+    /**
+     * Apply validator for CMS
+     */
+    public function getCMSValidator() {
+        return new RequiredFields('InputURL');
     }
 
     /**
