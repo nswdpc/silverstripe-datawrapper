@@ -23,7 +23,7 @@ class ElementDatawrapper extends ElementIframe {
 
     private static $icon = 'font-icon-code';
 
-    private static $inline_editable = true;
+    private static $inline_editable = false;
 
     private static $singular_name = 'Datawrapper element';
     private static $plural_name = 'Datawrapper elements';
