@@ -1,5 +1,8 @@
 <div class="content-element__content<% if $StyleVariant %> {$StyleVariant}<% end_if %>">
     <% include ElementDatawrapperTitle %>
+    <% if $Content %>
+    {$Content}
+    <% end_if %>
     <div class="outer">
         <% if $IsLazy %><noscript class="loading-lazy"><% end_if %>
             <iframe
