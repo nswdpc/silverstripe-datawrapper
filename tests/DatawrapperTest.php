@@ -25,14 +25,16 @@ class DatawrapperTest extends SapphireTest
     /**
      * Return test record for test
      */
-    private function createTestRecord() {
+    private function createTestRecord()
+    {
         return $this->objFromFixture(ElementDatawrapper::class, 'standardrecord');
     }
 
     /**
      * Test that the InputURL value results in the expected values being saved
      */
-    public function testUrlCreation() {
+    public function testUrlCreation()
+    {
         $record = [
             'DatawrapperId' => 'abcd4',
             'DatawrapperVersion' => 8
@@ -49,7 +51,7 @@ class DatawrapperTest extends SapphireTest
 
         $updatedRecord = ElementDatawrapper::get()->byId($id);
 
-        $this->assertEquals($record->InputURL, $updatedRecord->DatawrapperURL() );
+        $this->assertEquals($record->InputURL, $updatedRecord->DatawrapperURL());
         $this->assertEquals($record->DatawrapperId, $updatedRecord->DatawrapperId);
         $this->assertEquals($record->DatawrapperVersion, $updatedRecord->DatawrapperVersion);
     }
@@ -57,8 +59,8 @@ class DatawrapperTest extends SapphireTest
     /**
      * Test iframe save/update
      */
-    public function testIframe() {
-
+    public function testIframe()
+    {
         $width = 300;
         $height = 200;
 
@@ -82,7 +84,7 @@ class DatawrapperTest extends SapphireTest
 
         $this->assertTrue($updatedRecord->exists(), "Element datawrapper does not exist");
 
-        $this->assertEquals($record->InputURL, $updatedRecord->DatawrapperURL() );
+        $this->assertEquals($record->InputURL, $updatedRecord->DatawrapperURL());
 
         $iframe_width = $record->getIframeWidth();
         $this->assertEquals("100%", $iframe_width, "Responsive iframe should be 100% width");
@@ -102,10 +104,8 @@ class DatawrapperTest extends SapphireTest
             "src=\"" . htmlspecialchars($record->DatawrapperURL()) . "\""
         ];
 
-        foreach($strings as $string) {
+        foreach ($strings as $string) {
             $this->assertTrue(strpos($template, $string) !== false, "{$string} should appear in the template");
         }
-
     }
-
 }

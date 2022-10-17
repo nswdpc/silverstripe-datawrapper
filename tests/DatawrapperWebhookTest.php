@@ -28,24 +28,26 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * @inheritdoc
      */
-    public function setUp() : void {
+    public function setUp() : void
+    {
         parent::setUp();
-        Config::inst()->set( WebHookController::class, 'webhooks_random_code', 'randomecodeforurl' );
-        Config::inst()->set( WebHookController::class, 'webhooks_enabled', true );
+        Config::inst()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
+        Config::inst()->set(WebHookController::class, 'webhooks_enabled', true);
     }
 
     /**
      * Return test record for test
      */
-    private function createTestRecord() {
-         return $this->objFromFixture(ElementDatawrapper::class, 'webhookrecord');
+    private function createTestRecord()
+    {
+        return $this->objFromFixture(ElementDatawrapper::class, 'webhookrecord');
     }
 
     /**
      * Test webhook controller POST
      */
-    public function testWebHook() {
-
+    public function testWebHook()
+    {
         $width = 300;
         $height = 200;
 
@@ -125,14 +127,13 @@ class DatawrapperWebhookTest extends FunctionalTest
             $request->getStatusCode(),
             'Expected success got: ' . $request->getStatusCode() . "/" . $request->getStatusDescription()
         );
-
     }
 
     /**
      * Test webhook controller POST
      */
-    public function testWebHookAvoidRollback() {
-
+    public function testWebHookAvoidRollback()
+    {
         $width = 300;
         $height = 200;
 
@@ -178,14 +179,13 @@ class DatawrapperWebhookTest extends FunctionalTest
             $request->getStatusCode(),
             'Expected success, got: ' . $request->getStatusCode() . "/" . $request->getStatusDescription()
         );
-
     }
 
     /**
      * Test bad webhook controller POST
      */
-    public function testBadWebhook() {
-
+    public function testBadWebhook()
+    {
         $headers = [
             'Content-Type' => "application/json"
         ];
@@ -226,7 +226,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         );
 
         // turn off webhooks
-        Config::inst()->set( WebHookController::class, 'webhooks_enabled', false );
+        Config::inst()->set(WebHookController::class, 'webhooks_enabled', false);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -238,5 +238,4 @@ class DatawrapperWebhookTest extends FunctionalTest
             'Expected failure got: ' . $request->getStatusCode() . "/" . $request->getStatusDescription()
         );
     }
-
 }

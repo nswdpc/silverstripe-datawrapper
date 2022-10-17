@@ -17,8 +17,8 @@ use SilverStripe\View\Requirements;
  * Datawrapper Element
  * @author James Ellis <mark.taylor@dpc.nsw.gov.au>
  */
-class ElementDatawrapper extends ElementIframe {
-
+class ElementDatawrapper extends ElementIframe
+{
     private static $table_name = 'ElementDatawrapper';
 
     private static $icon = 'font-icon-code';
@@ -94,12 +94,12 @@ class ElementDatawrapper extends ElementIframe {
      * Set required parts from the URL saved
      * @return void
      */
-    protected function setPartsFromUrl() {
-        if(!empty($this->InputURL)) {
-
-            $path = trim( trim( parse_url( $this->InputURL, PHP_URL_PATH ), "/"));
+    protected function setPartsFromUrl()
+    {
+        if (!empty($this->InputURL)) {
+            $path = trim(trim(parse_url($this->InputURL, PHP_URL_PATH), "/"));
             $path_parts = explode("/", $path);
-            if(count($path_parts) != 2) {
+            if (count($path_parts) != 2) {
                 throw new ValidationException(
                     _t(
                         __CLASS__ . '.DW_URL_NOT_VALID',
@@ -111,7 +111,7 @@ class ElementDatawrapper extends ElementIframe {
                 );
             }
 
-            if(strlen($path_parts[0]) != 5) {
+            if (strlen($path_parts[0]) != 5) {
                 throw new ValidationException(
                     _t(
                         __CLASS__ . '.DW_ID_CHR_LENGTH',
@@ -121,7 +121,7 @@ class ElementDatawrapper extends ElementIframe {
             }
 
             $version = intval($path_parts[1]);
-            if($version < 1) {
+            if ($version < 1) {
                 throw new ValidationException(
                     _t(
                         __CLASS__ . '.DW_URL_VERSION_FAILURE',
@@ -132,7 +132,6 @@ class ElementDatawrapper extends ElementIframe {
 
             $this->DatawrapperId = $path_parts[0];
             $this->DatawrapperVersion = $version;
-
         }
     }
 
@@ -140,11 +139,12 @@ class ElementDatawrapper extends ElementIframe {
      * Return the datawrapper URL
      * @return string
      */
-    public function DatawrapperURL() {
-        if(!$this->DatawrapperId) {
+    public function DatawrapperURL()
+    {
+        if (!$this->DatawrapperId) {
             return "";
         }
-        if(!$this->DatawrapperVersion || $this->DatawrapperVersion <= 1) {
+        if (!$this->DatawrapperVersion || $this->DatawrapperVersion <= 1) {
             $this->DatawrapperVersion = 1;
         }
         $url = "https://"
@@ -162,7 +162,8 @@ class ElementDatawrapper extends ElementIframe {
      * Note that only one element per DatawrapperId can exist on a single page or "id" clashes will happen
      * @return string
      */
-    public function DatawrapperIdAttribute() {
+    public function DatawrapperIdAttribute()
+    {
         $id = "datawrapper-chart-{$this->DatawrapperId}";
         return $id;
     }
@@ -170,14 +171,16 @@ class ElementDatawrapper extends ElementIframe {
     /**
      * Apply validator for CMS
      */
-    public function getCMSValidator() {
+    public function getCMSValidator()
+    {
         return new RequiredFields('InputURL');
     }
 
     /**
      * Set up fields for editor content updates
      */
-    public function getCMSFields() {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
         $fields->removeByName([
             'URL',// link field
@@ -206,7 +209,7 @@ class ElementDatawrapper extends ElementIframe {
         );
 
         $webhook_url = WebhookController::getWebookURL();
-        if(!$webhook_url) {
+        if (!$webhook_url) {
             $fields->removeByName('AutoPublish');
         } else {
             $fields->insertAfter(
@@ -231,7 +234,7 @@ class ElementDatawrapper extends ElementIframe {
         }
 
         $contentField = $fields->dataFieldByName('Content');
-        if($contentField) {
+        if ($contentField) {
             $fields->insertAfter(
                 'AutoPublish',
                 $contentField
@@ -240,5 +243,4 @@ class ElementDatawrapper extends ElementIframe {
 
         return $fields;
     }
-
 }
