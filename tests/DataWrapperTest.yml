@@ -1,0 +1,17 @@
+NSWDPC\Elemental\Models\Datawrapper\ElementDatawrapper:
+  standardrecord:
+    Title: 'Datawrapper Test Element'
+    ShowTitle: 1
+    IsLazy: 1
+    IsFullWidth: 1
+    IsResponsive: '16x9'
+    AlternateContent: 'Alternate Content'
+    AutoPublish: 0
+  webhookrecord:
+    Title: 'Datawrapper Test Element for webhook test'
+    ShowTitle: 1
+    IsLazy: 1
+    IsFullWidth: 1
+    IsResponsive: '16x9'
+    AlternateContent: 'Test alternate content'
+    AutoPublish: 1
