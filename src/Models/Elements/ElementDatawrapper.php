@@ -45,6 +45,16 @@ class ElementDatawrapper extends ElementIframe {
         'AutoPublish' => 0,
     ];
 
+    /**
+     * @var array
+     * Provide indexes for fields used in queries
+     */
+    private static $indexes = [
+        'DatawrapperVersion' => true,
+        'DatawrapperId' => true,
+        'AutoPublish' => true
+    ];
+
     public function getType()
     {
         return _t(__CLASS__ . '.BlockType', 'Datawrapper visualisation');

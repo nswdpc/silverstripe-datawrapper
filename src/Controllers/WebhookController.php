@@ -171,9 +171,11 @@ class WebHookController extends Controller {
              * Matching the ID sent through
              */
             $elements = Versioned::get_by_stage(ElementDatawrapper::class, Versioned::DRAFT)
-                            ->filter('DatawrapperId', $id)
-                            // only get those that are marked to auto publish
-                            ->filter('AutoPublish', 1);
+                            ->filter([
+                                'DatawrapperId' => $id,// for this record ID
+                                'DatawrapperVersion:LessThan' => $public_version, // avoid rolling back to earlier versions
+                                'AutoPublish' => 1 // only get those that are marked to auto publish
+                            ]);
 
             $count = $elements->count();
             if($count > 0) {

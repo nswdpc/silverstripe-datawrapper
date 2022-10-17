@@ -53,7 +53,7 @@ class DatawrapperWebhookTest extends FunctionalTest
 
         $record = $this->createTestRecord();
         $record->DatawrapperId = $datawrapperId;
-        $record->DatawrapperVersion = 2;// at this version
+        $record->DatawrapperVersion = 2;// currently at this version
         $record->Width = $width;
         $record->Height = $height;
         $record->InputURL = "https://"
@@ -73,7 +73,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         $session = null;
         $data = [
             'id' => $datawrapperId,
-            'publicVersion' => 3 // publishing to this version
+            'publicVersion' => 3 // publishing to a later version
         ];
         $cookies = null;
         $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
@@ -124,6 +124,59 @@ class DatawrapperWebhookTest extends FunctionalTest
             200,
             $request->getStatusCode(),
             'Expected success got: ' . $request->getStatusCode() . "/" . $request->getStatusDescription()
+        );
+
+    }
+
+    /**
+     * Test webhook controller POST
+     */
+    public function testWebHookAvoidRollback() {
+
+        $width = 300;
+        $height = 200;
+
+        $datawrapperId = 'hook1';
+
+        $record = $this->createTestRecord();
+        $record->DatawrapperId = $datawrapperId;
+        $record->DatawrapperVersion = 4;// currently at version 4
+        $record->Width = $width;
+        $record->Height = $height;
+        $record->InputURL = "https://"
+                                . ElementDatawrapper::config()->get('default_host')
+                                . "/"
+                                . $record->DatawrapperId
+                                . "/"
+                                . $record->DatawrapperVersion
+                                . "/";
+        $record->write();
+
+        // POST request to the webhook controller
+        $url = WebHookController::getWebookURL();
+        $headers = [
+            'Content-Type' => "application/json"
+        ];
+        $session = null;
+        $data = [
+            'id' => $datawrapperId,
+            'publicVersion' => 3 // DW sends request with this version
+        ];
+        $cookies = null;
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+
+        $request = $this->post($url, $data, $headers, $session, $body, $cookies);
+        $response = json_decode($request->getBody());
+
+        $this->assertEquals(
+            0,
+            $response->count // expect no elements
+        );
+
+        $this->assertEquals(
+            200,
+            $request->getStatusCode(),
+            'Expected success, got: ' . $request->getStatusCode() . "/" . $request->getStatusDescription()
         );
 
     }
