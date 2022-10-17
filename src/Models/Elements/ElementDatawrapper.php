@@ -2,12 +2,13 @@
 
 namespace NSWDPC\Elemental\Models\Datawrapper;
 
-use BurnBright\ExternalURLField\ExternalURLField;
+use Codem\Utilities\HTML5\UrlField;
 use NSWDPC\Datawrapper\WebhookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ValidationException;
 use Silverstripe\View\ArrayData;
 use SilverStripe\View\Requirements;
@@ -22,17 +23,18 @@ class ElementDatawrapper extends ElementIframe {
 
     private static $icon = 'font-icon-code';
 
-    private static $inline_editable = true;
+    private static $inline_editable = false;
 
-    private static $singular_name = 'Datawrapper element';
-    private static $plural_name = 'Datawrapper elements';
+    private static $singular_name = 'Datawrapper visualisation';
+    private static $plural_name = 'Datawrapper visualisations';
 
-    private static $title = 'Datawrapper element';
-    private static $description = 'Display Datawrapper content';
+    private static $title = 'Datawrapper visualisation';
+    private static $description = 'Display a Datawrapper visualisation';
 
     private static $default_host = 'datawrapper.dwcdn.net';
 
     private static $db = [
+        'Content' => 'HTMLText',
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
         'DatawrapperVersion' => 'Int',
         'AutoPublish' => 'Boolean',
@@ -45,7 +47,7 @@ class ElementDatawrapper extends ElementIframe {
 
     public function getType()
     {
-        return _t(__CLASS__ . '.BlockType', 'Datawrapper');
+        return _t(__CLASS__ . '.BlockType', 'Datawrapper visualisation');
     }
 
     /**
@@ -74,6 +76,7 @@ class ElementDatawrapper extends ElementIframe {
         $this->Width = "100%";// DW elements are always full width
         $this->IsResponsive = 1;//DW elements are always responsive
         $this->URLID = 0;// DW URLs are generated based on the provided embed URL, link module not used
+        $this->IsDynamic = 0;// iframe module turn off IsDynamic, DW provides its own.
         $this->setPartsFromUrl();
     }
 
@@ -155,11 +158,21 @@ class ElementDatawrapper extends ElementIframe {
     }
 
     /**
+     * Apply validator for CMS
+     */
+    public function getCMSValidator() {
+        return new RequiredFields('InputURL');
+    }
+
+    /**
      * Set up fields for editor content updates
      */
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         $fields->removeByName([
+            'URL',// link field
+            'URLID',// link field
+            'IsDynamic',// remove auto resize field from iframe
             'IsResponsive',
             'Width',// the item width cannot be changed, it is always 100%
             'IsFullWidth',// this item is always full width
@@ -168,19 +181,18 @@ class ElementDatawrapper extends ElementIframe {
         ]);
 
         $fields->insertAfter(
-            ExternalURLField::create(
+            'Title',
+            UrlField::create(
                 'InputURL',
-                _t(__CLASS__ . ".DW_URL_NOT_EMBED_CODE", 'Datawrapper \'fullscreen share URL\' (not the embed code)'),
+                _t(
+                    __CLASS__ . ".DW_URL_LINK_TO_VISUALISATION",
+                    'The Datawrapper \'Link to your visualisation:\' URL (Visualisation only option)'
+                ),
                 $this->DatawrapperURL()
-            )->setDescription("In the format 'https://datawrapper.dwcdn.net/abc12/1/'")
+            )->setDescription("In the format <code>https://datawrapper.dwcdn.net/abc12/1/</code>")
             ->setAttribute('pattern', 'https://datawrapper.dwcdn.net/abc12/1/')
-            ->setConfig([
-                'html5validation' => true,
-                'defaultparts' => [
-                    'scheme' => 'https'
-                ]
-            ])->setInputType('url'),
-            'Title'
+            ->restrictToHttps()
+            ->setRequiredParts(['scheme','host','path'])
         );
 
         $webhook_url = WebhookController::getWebookURL();
@@ -188,6 +200,7 @@ class ElementDatawrapper extends ElementIframe {
             $fields->removeByName('AutoPublish');
         } else {
             $fields->insertAfter(
+                'InputURL',
                 CheckboxField::create(
                     'AutoPublish',
                     'Auto publish'
@@ -198,13 +211,20 @@ class ElementDatawrapper extends ElementIframe {
                         . "<br>"
                         . "The parent item of this element will not be published at the same time"
                         . "<br>"
-                        . "To enable this feature, please ensure the following URL is configured as a custom webhook in the relevant Team at Datawrapper<br><br>{url}",
+                        . "To enable this feature, please ensure the following URL is configured as a custom webhook in the relevant Team at Datawrapper: <code>{url}</code>",
                         [
                             "url" => $webhook_url
                         ]
                     )
-                ),
-                'InputURL'
+                )
+            );
+        }
+
+        $contentField = $fields->dataFieldByName('Content');
+        if($contentField) {
+            $fields->insertAfter(
+                'AutoPublish',
+                $contentField
             );
         }
 
