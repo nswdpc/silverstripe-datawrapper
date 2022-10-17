@@ -19,20 +19,50 @@ use SilverStripe\View\Requirements;
  */
 class ElementDatawrapper extends ElementIframe
 {
+
+    /**
+     * @var string
+     */
     private static $table_name = 'ElementDatawrapper';
 
+    /**
+     * @var string
+     */
     private static $icon = 'font-icon-code';
 
+    /**
+     * @var bool
+     */
     private static $inline_editable = false;
 
+    /**
+     * @var string
+     */
     private static $singular_name = 'Datawrapper visualisation';
+
+    /**
+     * @var string
+     */
     private static $plural_name = 'Datawrapper visualisations';
 
+    /**
+     * @var string
+     */
     private static $title = 'Datawrapper visualisation';
+
+    /**
+     * @var string
+     */
     private static $description = 'Display a Datawrapper visualisation';
 
+    /**
+     * @var string
+     */
     private static $default_host = 'datawrapper.dwcdn.net';
 
+    /**
+     * @var array
+     */
     private static $db = [
         'Content' => 'HTMLText',
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
@@ -40,6 +70,9 @@ class ElementDatawrapper extends ElementIframe
         'AutoPublish' => 'Boolean',
     ];
 
+    /**
+     * @var array
+     */
     private static $defaults = [
         'DatawrapperVersion' => 1,
         'AutoPublish' => 0,
@@ -55,6 +88,9 @@ class ElementDatawrapper extends ElementIframe
         'AutoPublish' => true
     ];
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return _t(__CLASS__ . '.BlockType', 'Datawrapper visualisation');
@@ -139,7 +175,7 @@ class ElementDatawrapper extends ElementIframe
      * Return the datawrapper URL
      * @return string
      */
-    public function DatawrapperURL()
+    public function DatawrapperURL() : string
     {
         if (!$this->DatawrapperId) {
             return "";
@@ -162,7 +198,7 @@ class ElementDatawrapper extends ElementIframe
      * Note that only one element per DatawrapperId can exist on a single page or "id" clashes will happen
      * @return string
      */
-    public function DatawrapperIdAttribute()
+    public function DatawrapperIdAttribute() : string
     {
         $id = "datawrapper-chart-{$this->DatawrapperId}";
         return $id;
@@ -177,7 +213,7 @@ class ElementDatawrapper extends ElementIframe
     }
 
     /**
-     * Set up fields for editor content updates
+     * @inheritdoc
      */
     public function getCMSFields()
     {

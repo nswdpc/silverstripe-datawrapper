@@ -16,10 +16,19 @@ use Silverstripe\Versioned\Versioned;
  */
 class WebHookController extends Controller
 {
+    /**
+     * @var bool
+     */
     private static $webhooks_enabled = true;
 
+    /**
+     * @var string
+     */
     private static $webhooks_random_code = '';
 
+    /**
+     * @var array
+     */
     private static $allowed_actions = [
         'submit' => true
     ];
@@ -39,13 +48,13 @@ class WebHookController extends Controller
     /**
      * Return the URL (absolute) for webhook submissions
      * If webhooks are not enabled, this will return boolean false
-     * @return string|bool
+     * @return string|null
      */
-    public static function getWebookURL()
+    public static function getWebookURL() : ?string
     {
         $enabled = self::config()->get('webhooks_enabled');
         if (!$enabled) {
-            return false;
+            return null;
         }
         $code = self::config()->get('webhooks_random_code');
         $path = "_datawrapperwebhook/submit/";
@@ -60,7 +69,7 @@ class WebHookController extends Controller
      * The two keys are 'success' being a boolean, count being the number of items changed
      * @return string JSON encoded value
      */
-    protected function getResponseBody($success = true, $count = 0)
+    protected function getResponseBody($success = true, $count = 0) : string
     {
         $data = [
             'success' => $success,
@@ -73,7 +82,7 @@ class WebHookController extends Controller
      * We have done something wrong
      * @return HTTPResponse
      */
-    protected function serverError($status_code = 503, $message = "")
+    protected function serverError($status_code = 503, $message = "") : HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -84,7 +93,7 @@ class WebHookController extends Controller
      * Client (being Mailgun user agent) has done something wrong
      * @return HTTPResponse
      */
-    protected function clientError($status_code  = 400, $message = "")
+    protected function clientError($status_code  = 400, $message = ""): HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -95,7 +104,7 @@ class WebHookController extends Controller
      * All is good
      * @return HTTPResponse
      */
-    protected function returnOK($status_code  = 200, $message = "OK", $count = 0)
+    protected function returnOK($status_code  = 200, $message = "OK", $count = 0) : HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(true, $count), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -106,7 +115,7 @@ class WebHookController extends Controller
      * Ignore requests to /
      * @return HTTPResponse
      */
-    public function index($request)
+    public function index($request) : HTTPResponse
     {
         return $this->clientError(404, "Not Found");
     }
@@ -115,7 +124,7 @@ class WebHookController extends Controller
      * Returns whether webhooks are enabled in Configuration
      * @return bool
      */
-    protected function webhooksEnabled()
+    protected function webhooksEnabled() : bool
     {
         return $this->config()->get('webhooks_enabled');
     }
@@ -124,7 +133,7 @@ class WebHookController extends Controller
      * Test whether the random code sent in the request matches what is configured
      * @return bool
      */
-    protected function webhookRandomCodeMatch(HTTPRequest $request)
+    protected function webhookRandomCodeMatch(HTTPRequest $request) : bool
     {
         $code = $this->config()->get('webhooks_random_code');
         if (!$code) {
@@ -138,7 +147,7 @@ class WebHookController extends Controller
      * Primary handler for submitted webooks
      * @throws \Exception
      */
-    public function submit(HTTPRequest $request = null)
+    public function submit(HTTPRequest $request = null) : HTTPResponse
     {
         try {
             if (!$this->webhooksEnabled()) {
