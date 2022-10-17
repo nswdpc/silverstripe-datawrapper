@@ -28,7 +28,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * @inheritdoc
      */
-    public function setUp() {
+    public function setUp() : void {
         parent::setUp();
         Config::inst()->set( WebHookController::class, 'webhooks_random_code', 'randomecodeforurl' );
         Config::inst()->set( WebHookController::class, 'webhooks_enabled', true );
