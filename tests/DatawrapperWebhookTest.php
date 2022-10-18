@@ -68,7 +68,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         $record->write();
 
         // POST request to the webhook controller
-        $url = WebHookController::getWebookURL();
+        $url = WebHookController::getWebhookURL();
         $headers = [
             'Content-Type' => "application/json"
         ];
@@ -101,7 +101,7 @@ class DatawrapperWebhookTest extends FunctionalTest
 
         $this->assertEquals(0, $record->AutoPublish);
 
-        $url = WebHookController::getWebookURL();
+        $url = WebHookController::getWebhookURL();
         $headers = [
             'Content-Type' => "application/json"
         ];
@@ -154,7 +154,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         $record->write();
 
         // POST request to the webhook controller
-        $url = WebHookController::getWebookURL();
+        $url = WebHookController::getWebhookURL();
         $headers = [
             'Content-Type' => "application/json"
         ];
@@ -212,7 +212,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         );
 
         // a valid URL
-        $url = WebHookController::getWebookURL();
+        $url = WebHookController::getWebhookURL();
 
 
         $request = $this->get($url);

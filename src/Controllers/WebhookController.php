@@ -39,10 +39,20 @@ class WebHookController extends Controller
      */
     public function Link($action = null)
     {
-        if ($link = self::getWebookURL()) {
+        if ($link = self::getWebhookURL()) {
             return $link;
         }
         return "";
+    }
+
+    /**
+     * Mis-named public method retained for BC
+     * @deprecated 1.0
+     * @return string|null
+     */
+    public static function getWebookURL() : ?string
+    {
+        return static::getWebhookURL();
     }
 
     /**
@@ -50,7 +60,7 @@ class WebHookController extends Controller
      * If webhooks are not enabled, this will return boolean false
      * @return string|null
      */
-    public static function getWebookURL() : ?string
+    public static function getWebhookURL() : ?string
     {
         $enabled = self::config()->get('webhooks_enabled');
         if (!$enabled) {

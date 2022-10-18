@@ -244,7 +244,7 @@ class ElementDatawrapper extends ElementIframe
             ->setRequiredParts(['scheme','host','path'])
         );
 
-        $webhook_url = WebhookController::getWebookURL();
+        $webhook_url = WebhookController::getWebhookURL();
         if (!$webhook_url) {
             $fields->removeByName('AutoPublish');
         } else {
