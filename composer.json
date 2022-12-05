@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "nswdpc/silverstripe-elemental-iframe":"^0.2",
+        "nswdpc/silverstripe-elemental-iframe":"^0.3",
         "codem/silverstripe-html5-inputs": "^0.1",
         "silverstripe/framework" : "^4.10"
     },

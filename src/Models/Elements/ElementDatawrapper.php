@@ -221,6 +221,7 @@ class ElementDatawrapper extends ElementIframe
         $fields->removeByName([
             'URL',// link field
             'URLID',// link field
+            'URLValue',// URLValue field from nswdpc/silverstripe-elemental-iframe
             'IsDynamic',// remove auto resize field from iframe
             'IsResponsive',
             'Width',// the item width cannot be changed, it is always 100%
