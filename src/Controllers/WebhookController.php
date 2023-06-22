@@ -211,7 +211,7 @@ class WebHookController extends Controller
                     $element->DatawrapperVersion = $public_version;
                     $element->write();
                     // publish the element
-                    $element->doPublish();
+                    $element->publishSingle();
                 }
             }
 
