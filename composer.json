@@ -28,6 +28,22 @@
         "phpunit/phpunit": "^9.5",
         "friendsofphp/php-cs-fixer": "^3"
     },
+    "autoload": {
+        "psr-4": {
+            "NSWDPC\\Datawrapper\\": [
+                "src/Controllers/"
+            ],
+            "NSWDPC\\Elemental\\Models\\Datawrapper\\": [
+                "src/Models/Elements/"
+            ],
+            "NSWDPC\\Datawrapper\\Tests\\": [
+                "tests/"
+            ],
+            "NSWDPC\\Elemental\\Tests\\Datawrapper\\": [
+                "tests/"
+            ]
+        }
+    },
     "extra": {
         "expose": [
             "client/static"
