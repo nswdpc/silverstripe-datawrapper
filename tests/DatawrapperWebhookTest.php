@@ -1,6 +1,6 @@
 <?php
 
-namespace  NSWDPC\Elemental\Tests\Datawrapper;
+namespace NSWDPC\Datawrapper\Tests;
 
 use NSWDPC\Datawrapper\WebHookController;
 use NSWDPC\Elemental\Models\Datawrapper\ElementDatawrapper;
