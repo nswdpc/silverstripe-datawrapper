@@ -201,7 +201,6 @@ class DatawrapperWebhookTest extends FunctionalTest
         $url = Director::absoluteURL($path);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
-        json_decode($request->getBody());
 
         // should not be a 200 OK
         $this->assertNotEquals(
