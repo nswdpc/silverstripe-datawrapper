@@ -11,7 +11,6 @@ use SilverStripe\Dev\SapphireTest;
  */
 class DatawrapperTest extends SapphireTest
 {
-
     /**
      * @inheritdoc
      */

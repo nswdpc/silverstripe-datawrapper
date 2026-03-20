@@ -5,9 +5,7 @@ namespace NSWDPC\Elemental\Models\Datawrapper;
 use Codem\Utilities\HTML5\UrlField;
 use NSWDPC\Datawrapper\WebHookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
-use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\View\ArrayData;
@@ -23,7 +21,6 @@ use SilverStripe\View\Requirements;
  */
 class ElementDatawrapper extends ElementIframe
 {
-
     private static string $table_name = 'ElementDatawrapper';
 
     private static string $icon = 'font-icon-code';
@@ -151,7 +148,7 @@ class ElementDatawrapper extends ElementIframe
     /**
      * Return the datawrapper URL
      */
-    public function DatawrapperURL() : string
+    public function DatawrapperURL(): string
     {
         if (!$this->DatawrapperId) {
             return "";
@@ -173,7 +170,7 @@ class ElementDatawrapper extends ElementIframe
      * Return the "id" attribute for a DW element
      * Note that only one element per DatawrapperId can exist on a single page or "id" clashes will happen
      */
-    public function DatawrapperIdAttribute() : string
+    public function DatawrapperIdAttribute(): string
     {
         return "datawrapper-chart-{$this->DatawrapperId}";
     }

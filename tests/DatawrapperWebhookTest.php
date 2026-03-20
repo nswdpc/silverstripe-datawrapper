@@ -14,7 +14,6 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class DatawrapperWebhookTest extends FunctionalTest
 {
-
     /**
      * @inheritdoc
      */
@@ -28,7 +27,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * @inheritdoc
      */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
@@ -78,7 +77,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 3 // publishing to a later version
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -111,7 +110,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 1
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -164,7 +163,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 3 // DW sends request with this version
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -195,7 +194,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 1
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         // put together a request with a fake code
         $path = "/_datawrapperwebhook/submit/notarealcode/";

@@ -42,7 +42,7 @@ class WebHookController extends Controller
      * Mis-named public method retained for BC
      * @deprecated 1.0
      */
-    public static function getWebookURL() : ?string
+    public static function getWebookURL(): ?string
     {
         return static::getWebhookURL();
     }
@@ -51,7 +51,7 @@ class WebHookController extends Controller
      * Return the URL (absolute) for webhook submissions
      * If webhooks are not enabled, this will return boolean false
      */
-    public static function getWebhookURL() : ?string
+    public static function getWebhookURL(): ?string
     {
         $enabled = self::config()->get('webhooks_enabled');
         if (!$enabled) {
@@ -72,7 +72,7 @@ class WebHookController extends Controller
      * The two keys are 'success' being a boolean, count being the number of items changed
      * @return string JSON encoded value
      */
-    protected function getResponseBody($success = true, $count = 0) : string
+    protected function getResponseBody($success = true, $count = 0): string
     {
         $data = [
             'success' => $success,
@@ -84,7 +84,7 @@ class WebHookController extends Controller
     /**
      * We have done something wrong
      */
-    protected function serverError($status_code = 503, $message = "") : HTTPResponse
+    protected function serverError($status_code = 503, $message = ""): HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -104,7 +104,7 @@ class WebHookController extends Controller
     /**
      * All is good
      */
-    protected function returnOK($status_code  = 200, $message = "OK", $count = 0) : HTTPResponse
+    protected function returnOK($status_code  = 200, $message = "OK", $count = 0): HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(true, $count), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -114,7 +114,7 @@ class WebHookController extends Controller
     /**
      * Ignore requests to /
      */
-    public function index($request) : HTTPResponse
+    public function index($request): HTTPResponse
     {
         return $this->clientError(404, "Not Found");
     }
@@ -122,7 +122,7 @@ class WebHookController extends Controller
     /**
      * Returns whether webhooks are enabled in Configuration
      */
-    protected function webhooksEnabled() : bool
+    protected function webhooksEnabled(): bool
     {
         return $this->config()->get('webhooks_enabled');
     }
@@ -130,7 +130,7 @@ class WebHookController extends Controller
     /**
      * Test whether the random code sent in the request matches what is configured
      */
-    protected function webhookRandomCodeMatch(HTTPRequest $request) : bool
+    protected function webhookRandomCodeMatch(HTTPRequest $request): bool
     {
         $code = $this->config()->get('webhooks_random_code');
         if (!$code) {
@@ -145,7 +145,7 @@ class WebHookController extends Controller
      * Primary handler for submitted webooks
      * @throws \Exception
      */
-    public function submit(HTTPRequest $request = null) : HTTPResponse
+    public function submit(HTTPRequest $request = null): HTTPResponse
     {
         try {
             if (!$this->webhooksEnabled()) {
