@@ -157,6 +157,7 @@ class ElementDatawrapper extends ElementIframe
         if (!$this->DatawrapperVersion || $this->DatawrapperVersion <= 1) {
             $this->DatawrapperVersion = 1;
         }
+
         return "https://"
                 . $this->config()->get('default_host')
                 . "/"

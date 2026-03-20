@@ -215,7 +215,7 @@ class DatawrapperWebhookTest extends FunctionalTest
 
 
         $request = $this->get($url);
-        $response = json_decode($request->getBody());
+        json_decode($request->getBody());
 
         // GET should not be a 200 OK
         $this->assertNotEquals(
