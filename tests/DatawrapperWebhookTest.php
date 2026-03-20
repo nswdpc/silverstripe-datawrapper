@@ -46,7 +46,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test webhook controller POST
      */
-    public function testWebHook()
+    public function testWebHook(): void
     {
         $width = 300;
         $height = 200;
@@ -132,7 +132,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test webhook controller POST
      */
-    public function testWebHookAvoidRollback()
+    public function testWebHookAvoidRollback(): void
     {
         $width = 300;
         $height = 200;
@@ -184,7 +184,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test bad webhook controller POST
      */
-    public function testBadWebhook()
+    public function testBadWebhook(): void
     {
         $headers = [
             'Content-Type' => "application/json"
@@ -229,7 +229,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         Config::modify()->set(WebHookController::class, 'webhooks_enabled', false);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
-        $response = json_decode($request->getBody());
+        json_decode($request->getBody());
 
         // should not be a 200 OK
         $this->assertNotEquals(

@@ -16,20 +16,11 @@ use SilverStripe\Versioned\Versioned;
  */
 class WebHookController extends Controller
 {
-    /**
-     * @var bool
-     */
-    private static $webhooks_enabled = true;
+    private static bool $webhooks_enabled = true;
 
-    /**
-     * @var string
-     */
-    private static $webhooks_random_code = '';
+    private static string $webhooks_random_code = '';
 
-    /**
-     * @var array
-     */
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'submit' => true
     ];
 
@@ -37,18 +28,19 @@ class WebHookController extends Controller
      * Return link to this controller
      * @return string
      */
+    #[\Override]
     public function Link($action = null)
     {
         if ($link = self::getWebhookURL()) {
             return $link;
         }
+
         return "";
     }
 
     /**
      * Mis-named public method retained for BC
      * @deprecated 1.0
-     * @return string|null
      */
     public static function getWebookURL() : ?string
     {
@@ -58,7 +50,6 @@ class WebHookController extends Controller
     /**
      * Return the URL (absolute) for webhook submissions
      * If webhooks are not enabled, this will return boolean false
-     * @return string|null
      */
     public static function getWebhookURL() : ?string
     {
@@ -66,11 +57,13 @@ class WebHookController extends Controller
         if (!$enabled) {
             return null;
         }
+
         $code = self::config()->get('webhooks_random_code');
         $path = "_datawrapperwebhook/submit/";
         if ($code) {
             $path .= "{$code}/";
         }
+
         return Director::absoluteURL($path);
     }
 
@@ -90,7 +83,6 @@ class WebHookController extends Controller
 
     /**
      * We have done something wrong
-     * @return HTTPResponse
      */
     protected function serverError($status_code = 503, $message = "") : HTTPResponse
     {
@@ -101,7 +93,6 @@ class WebHookController extends Controller
 
     /**
      * Client (being Mailgun user agent) has done something wrong
-     * @return HTTPResponse
      */
     protected function clientError($status_code  = 400, $message = ""): HTTPResponse
     {
@@ -112,7 +103,6 @@ class WebHookController extends Controller
 
     /**
      * All is good
-     * @return HTTPResponse
      */
     protected function returnOK($status_code  = 200, $message = "OK", $count = 0) : HTTPResponse
     {
@@ -123,7 +113,6 @@ class WebHookController extends Controller
 
     /**
      * Ignore requests to /
-     * @return HTTPResponse
      */
     public function index($request) : HTTPResponse
     {
@@ -132,7 +121,6 @@ class WebHookController extends Controller
 
     /**
      * Returns whether webhooks are enabled in Configuration
-     * @return bool
      */
     protected function webhooksEnabled() : bool
     {
@@ -141,7 +129,6 @@ class WebHookController extends Controller
 
     /**
      * Test whether the random code sent in the request matches what is configured
-     * @return bool
      */
     protected function webhookRandomCodeMatch(HTTPRequest $request) : bool
     {
@@ -149,6 +136,7 @@ class WebHookController extends Controller
         if (!$code) {
             return true;
         }
+
         $request_code = $request->param('ID');
         return $request_code == $code;
     }
@@ -180,7 +168,7 @@ class WebHookController extends Controller
             }
 
             // POST body
-            $payload = json_decode($request->getBody(), true);
+            $payload = json_decode((string) $request->getBody(), true);
             if (!$payload) {
                 throw new \Exception("No payload found");
             }
@@ -216,8 +204,8 @@ class WebHookController extends Controller
             }
 
             return $this->returnOK(200, "OK", $count);
-        } catch (\Exception $e) {
-            return $this->clientError($e->getCode(), $e->getMessage());
+        } catch (\Exception $exception) {
+            return $this->clientError($exception->getCode(), $exception->getMessage());
         }
     }
 }

@@ -16,64 +16,38 @@ use SilverStripe\View\Requirements;
 /**
  * Datawrapper Element
  * @author James Ellis <mark.taylor@dpc.nsw.gov.au>
+ * @property ?string $Content
+ * @property ?string $DatawrapperId
+ * @property int $DatawrapperVersion
+ * @property bool $AutoPublish
  */
 class ElementDatawrapper extends ElementIframe
 {
 
-    /**
-     * @var string
-     */
-    private static $table_name = 'ElementDatawrapper';
+    private static string $table_name = 'ElementDatawrapper';
 
-    /**
-     * @var string
-     */
-    private static $icon = 'font-icon-code';
+    private static string $icon = 'font-icon-code';
 
-    /**
-     * @var bool
-     */
-    private static $inline_editable = false;
+    private static bool $inline_editable = false;
 
-    /**
-     * @var string
-     */
-    private static $singular_name = 'Datawrapper visualisation';
+    private static string $singular_name = 'Datawrapper visualisation';
 
-    /**
-     * @var string
-     */
-    private static $plural_name = 'Datawrapper visualisations';
+    private static string $plural_name = 'Datawrapper visualisations';
 
-    /**
-     * @var string
-     */
-    private static $title = 'Datawrapper visualisation';
+    private static string $title = 'Datawrapper visualisation';
 
-    /**
-     * @var string
-     */
-    private static $description = 'Display a Datawrapper visualisation';
+    private static string $description = 'Display a Datawrapper visualisation';
 
-    /**
-     * @var string
-     */
-    private static $default_host = 'datawrapper.dwcdn.net';
+    private static string $default_host = 'datawrapper.dwcdn.net';
 
-    /**
-     * @var array
-     */
-    private static $db = [
+    private static array $db = [
         'Content' => 'HTMLText',
         'DatawrapperId' => 'Varchar(5)',// dw IDs are 5 chr long
         'DatawrapperVersion' => 'Int',
         'AutoPublish' => 'Boolean',
     ];
 
-    /**
-     * @var array
-     */
-    private static $defaults = [
+    private static array $defaults = [
         'DatawrapperVersion' => 1,
         'AutoPublish' => 0,
     ];
@@ -82,7 +56,7 @@ class ElementDatawrapper extends ElementIframe
      * @var array
      * Provide indexes for fields used in queries
      */
-    private static $indexes = [
+    private static array $indexes = [
         'DatawrapperVersion' => true,
         'DatawrapperId' => true,
         'AutoPublish' => true
@@ -91,14 +65,16 @@ class ElementDatawrapper extends ElementIframe
     /**
      * @return string
      */
+    #[\Override]
     public function getType()
     {
-        return _t(__CLASS__ . '.BlockType', 'Datawrapper visualisation');
+        return _t(self::class . '.BlockType', 'Datawrapper visualisation');
     }
 
     /**
      * Apply requirements when templating
      */
+    #[\Override]
     public function forTemplate($holder = true)
     {
         Requirements::customScript(
@@ -115,6 +91,7 @@ class ElementDatawrapper extends ElementIframe
     /**
      * Handle default settings prior to write
      */
+    #[\Override]
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
@@ -133,12 +110,12 @@ class ElementDatawrapper extends ElementIframe
     protected function setPartsFromUrl()
     {
         if (!empty($this->InputURL)) {
-            $path = trim(trim(parse_url($this->InputURL, PHP_URL_PATH), "/"));
+            $path = trim(trim(parse_url((string) $this->InputURL, PHP_URL_PATH), "/"));
             $path_parts = explode("/", $path);
-            if (count($path_parts) != 2) {
+            if (count($path_parts) !== 2) {
                 throw ValidationException::create(
                     _t(
-                        __CLASS__ . '.DW_URL_NOT_VALID',
+                        self::class . '.DW_URL_NOT_VALID',
                         'The Datawrapper path must have a 5 character Datawrapper chart Id and a version number. The URL provided was {url}',
                         [
                             'url' => $this->InputURL
@@ -147,10 +124,10 @@ class ElementDatawrapper extends ElementIframe
                 );
             }
 
-            if (strlen($path_parts[0]) != 5) {
+            if (strlen($path_parts[0]) !== 5) {
                 throw ValidationException::create(
                     _t(
-                        __CLASS__ . '.DW_ID_CHR_LENGTH',
+                        self::class . '.DW_ID_CHR_LENGTH',
                         'The Datawrapper chart Id must be 5 characters long'
                     )
                 );
@@ -160,7 +137,7 @@ class ElementDatawrapper extends ElementIframe
             if ($version < 1) {
                 throw ValidationException::create(
                     _t(
-                        __CLASS__ . '.DW_URL_VERSION_FAILURE',
+                        self::class . '.DW_URL_VERSION_FAILURE',
                         'The Datawrapper version must be >= 1'
                     )
                 );
@@ -173,35 +150,32 @@ class ElementDatawrapper extends ElementIframe
 
     /**
      * Return the datawrapper URL
-     * @return string
      */
     public function DatawrapperURL() : string
     {
         if (!$this->DatawrapperId) {
             return "";
         }
+
         if (!$this->DatawrapperVersion || $this->DatawrapperVersion <= 1) {
             $this->DatawrapperVersion = 1;
         }
-        $url = "https://"
+        return "https://"
                 . $this->config()->get('default_host')
                 . "/"
                 . $this->DatawrapperId
                 . "/"
                 . $this->DatawrapperVersion
                 . "/";
-        return $url;
     }
 
     /**
      * Return the "id" attribute for a DW element
      * Note that only one element per DatawrapperId can exist on a single page or "id" clashes will happen
-     * @return string
      */
     public function DatawrapperIdAttribute() : string
     {
-        $id = "datawrapper-chart-{$this->DatawrapperId}";
-        return $id;
+        return "datawrapper-chart-{$this->DatawrapperId}";
     }
 
     /**
@@ -215,6 +189,7 @@ class ElementDatawrapper extends ElementIframe
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -235,8 +210,8 @@ class ElementDatawrapper extends ElementIframe
             UrlField::create(
                 'InputURL',
                 _t(
-                    __CLASS__ . ".DW_URL_LINK_TO_VISUALISATION",
-                    'The Datawrapper \'Link to your visualisation:\' URL (Visualisation only option)'
+                    self::class . ".DW_URL_LINK_TO_VISUALISATION",
+                    "The Datawrapper 'Link to your visualisation:' URL (Visualisation only option)"
                 ),
                 $this->DatawrapperURL()
             )->setDescription("In the format <code>https://datawrapper.dwcdn.net/abc12/1/</code>")
@@ -256,7 +231,7 @@ class ElementDatawrapper extends ElementIframe
                     'Auto publish'
                 )->setDescription(
                     _t(
-                        __CLASS__ . '.DW_AUTOPUBLISH',
+                        self::class . '.DW_AUTOPUBLISH',
                         "If checked, this element will be published when the chart is published at Datawrapper, "
                         . "<br>"
                         . "The parent item of this element will not be published at the same time"
