@@ -7,12 +7,12 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use Silverstripe\Versioned\Versioned;
+use SilverStripe\Versioned\Versioned;
 
 /**
  * Controller for handling webhook submissions from Datawrapper
  * To create a webhook URL, see the README.md
- * @author James <james.ellis@dpc.nsw.gov.au>
+ * @author James
  */
 class WebHookController extends Controller
 {

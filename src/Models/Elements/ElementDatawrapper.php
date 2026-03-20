@@ -3,14 +3,14 @@
 namespace NSWDPC\Elemental\Models\Datawrapper;
 
 use Codem\Utilities\HTML5\UrlField;
-use NSWDPC\Datawrapper\WebhookController;
+use NSWDPC\Datawrapper\WebHookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ValidationException;
-use Silverstripe\View\ArrayData;
+use SilverStripe\View\ArrayData;
 use SilverStripe\View\Requirements;
 
 /**
@@ -136,7 +136,7 @@ class ElementDatawrapper extends ElementIframe
             $path = trim(trim(parse_url($this->InputURL, PHP_URL_PATH), "/"));
             $path_parts = explode("/", $path);
             if (count($path_parts) != 2) {
-                throw new ValidationException(
+                throw ValidationException::create(
                     _t(
                         __CLASS__ . '.DW_URL_NOT_VALID',
                         'The Datawrapper path must have a 5 character Datawrapper chart Id and a version number. The URL provided was {url}',
@@ -148,7 +148,7 @@ class ElementDatawrapper extends ElementIframe
             }
 
             if (strlen($path_parts[0]) != 5) {
-                throw new ValidationException(
+                throw ValidationException::create(
                     _t(
                         __CLASS__ . '.DW_ID_CHR_LENGTH',
                         'The Datawrapper chart Id must be 5 characters long'
@@ -158,7 +158,7 @@ class ElementDatawrapper extends ElementIframe
 
             $version = intval($path_parts[1]);
             if ($version < 1) {
-                throw new ValidationException(
+                throw ValidationException::create(
                     _t(
                         __CLASS__ . '.DW_URL_VERSION_FAILURE',
                         'The Datawrapper version must be >= 1'
@@ -209,7 +209,7 @@ class ElementDatawrapper extends ElementIframe
      */
     public function getCMSValidator()
     {
-        return new RequiredFields('InputURL');
+        return RequiredFields::create(['InputURL']);
     }
 
     /**
