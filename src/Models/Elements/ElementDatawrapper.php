@@ -13,7 +13,7 @@ use SilverStripe\View\Requirements;
 
 /**
  * Datawrapper Element
- * @author James Ellis <mark.taylor@dpc.nsw.gov.au>
+ * @author James
  * @property ?string $Content
  * @property ?string $DatawrapperId
  * @property int $DatawrapperVersion
