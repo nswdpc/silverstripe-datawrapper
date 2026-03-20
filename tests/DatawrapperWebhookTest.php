@@ -31,8 +31,8 @@ class DatawrapperWebhookTest extends FunctionalTest
     public function setUp() : void
     {
         parent::setUp();
-        Config::inst()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
-        Config::inst()->set(WebHookController::class, 'webhooks_enabled', true);
+        Config::modify()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
+        Config::modify()->set(WebHookController::class, 'webhooks_enabled', true);
     }
 
     /**
@@ -226,7 +226,7 @@ class DatawrapperWebhookTest extends FunctionalTest
         );
 
         // turn off webhooks
-        Config::inst()->set(WebHookController::class, 'webhooks_enabled', false);
+        Config::modify()->set(WebHookController::class, 'webhooks_enabled', false);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
