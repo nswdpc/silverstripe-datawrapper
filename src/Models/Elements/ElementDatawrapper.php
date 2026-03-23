@@ -6,9 +6,9 @@ use Codem\Utilities\HTML5\UrlField;
 use NSWDPC\Datawrapper\WebHookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\RequiredFields;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
+use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\View\Requirements;
 
 /**
@@ -72,7 +72,7 @@ class ElementDatawrapper extends ElementIframe
      * Apply requirements when templating
      */
     #[\Override]
-    public function forTemplate($holder = true)
+    public function forTemplate($holder = true): string
     {
         Requirements::customScript(
             ArrayData::create([])->renderWith('NSWDPC/Elemental/Models/Datawrapper/ResponsiveScript'),
@@ -181,7 +181,7 @@ class ElementDatawrapper extends ElementIframe
      */
     public function getCMSValidator()
     {
-        return RequiredFields::create(['InputURL']);
+        return RequiredFieldsValidator::create(['InputURL']);
     }
 
     /**
