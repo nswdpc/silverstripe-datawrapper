@@ -33,7 +33,7 @@ class ElementDatawrapper extends ElementIframe
 
     private static string $title = 'Datawrapper visualisation';
 
-    private static string $description = 'Display a Datawrapper visualisation';
+    private static string $class_description = 'Display a Datawrapper visualisation';
 
     private static string $default_host = 'datawrapper.dwcdn.net';
 
