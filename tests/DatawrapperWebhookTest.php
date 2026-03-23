@@ -14,7 +14,6 @@ use SilverStripe\Dev\FunctionalTest;
  */
 class DatawrapperWebhookTest extends FunctionalTest
 {
-
     /**
      * @inheritdoc
      */
@@ -28,11 +27,11 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * @inheritdoc
      */
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
-        Config::inst()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
-        Config::inst()->set(WebHookController::class, 'webhooks_enabled', true);
+        Config::modify()->set(WebHookController::class, 'webhooks_random_code', 'randomecodeforurl');
+        Config::modify()->set(WebHookController::class, 'webhooks_enabled', true);
     }
 
     /**
@@ -46,7 +45,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test webhook controller POST
      */
-    public function testWebHook()
+    public function testWebHook(): void
     {
         $width = 300;
         $height = 200;
@@ -78,7 +77,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 3 // publishing to a later version
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -111,7 +110,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 1
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -132,7 +131,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test webhook controller POST
      */
-    public function testWebHookAvoidRollback()
+    public function testWebHookAvoidRollback(): void
     {
         $width = 300;
         $height = 200;
@@ -164,7 +163,7 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 3 // DW sends request with this version
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
         $response = json_decode($request->getBody());
@@ -184,7 +183,7 @@ class DatawrapperWebhookTest extends FunctionalTest
     /**
      * Test bad webhook controller POST
      */
-    public function testBadWebhook()
+    public function testBadWebhook(): void
     {
         $headers = [
             'Content-Type' => "application/json"
@@ -195,14 +194,13 @@ class DatawrapperWebhookTest extends FunctionalTest
             'publicVersion' => 1
         ];
         $cookies = null;
-        $body = json_encode($data, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+        $body = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         // put together a request with a fake code
         $path = "/_datawrapperwebhook/submit/notarealcode/";
         $url = Director::absoluteURL($path);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
-        $response = json_decode($request->getBody());
 
         // should not be a 200 OK
         $this->assertNotEquals(
@@ -216,7 +214,6 @@ class DatawrapperWebhookTest extends FunctionalTest
 
 
         $request = $this->get($url);
-        $response = json_decode($request->getBody());
 
         // GET should not be a 200 OK
         $this->assertNotEquals(
@@ -226,10 +223,10 @@ class DatawrapperWebhookTest extends FunctionalTest
         );
 
         // turn off webhooks
-        Config::inst()->set(WebHookController::class, 'webhooks_enabled', false);
+        Config::modify()->set(WebHookController::class, 'webhooks_enabled', false);
 
         $request = $this->post($url, $data, $headers, $session, $body, $cookies);
-        $response = json_decode($request->getBody());
+        json_decode($request->getBody());
 
         // should not be a 200 OK
         $this->assertNotEquals(

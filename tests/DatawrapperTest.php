@@ -11,7 +11,6 @@ use SilverStripe\Dev\SapphireTest;
  */
 class DatawrapperTest extends SapphireTest
 {
-
     /**
      * @inheritdoc
      */
@@ -33,7 +32,7 @@ class DatawrapperTest extends SapphireTest
     /**
      * Test that the InputURL value results in the expected values being saved
      */
-    public function testUrlCreation()
+    public function testUrlCreation(): void
     {
         $record = [
             'DatawrapperId' => 'abcd4',
@@ -59,7 +58,7 @@ class DatawrapperTest extends SapphireTest
     /**
      * Test iframe save/update
      */
-    public function testIframe()
+    public function testIframe(): void
     {
         $width = 300;
         $height = 200;
@@ -96,16 +95,16 @@ class DatawrapperTest extends SapphireTest
 
         $strings = [
             "id=\"{$record->DatawrapperIdAttribute()}",
-            "allow=\"fullscreen\"",
-            "loading=\"lazy\"",
+            'allow="fullscreen"',
+            'loading="lazy"',
             "height=\"{$iframe_height}\"",
             "<h2>{$record->Title}</h2>",
             "title=\"{$record->AlternateContent}\"",
-            "src=\"" . htmlspecialchars($record->DatawrapperURL()) . "\""
+            'src="' . htmlspecialchars((string) $record->DatawrapperURL()) . '"'
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(strpos($template, $string) !== false, "{$string} should appear in the template");
+            $this->assertTrue(str_contains((string) $template, $string), "{$string} should appear in the template");
         }
     }
 }

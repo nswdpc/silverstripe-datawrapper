@@ -7,29 +7,20 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use Silverstripe\Versioned\Versioned;
+use SilverStripe\Versioned\Versioned;
 
 /**
  * Controller for handling webhook submissions from Datawrapper
  * To create a webhook URL, see the README.md
- * @author James <james.ellis@dpc.nsw.gov.au>
+ * @author James
  */
 class WebHookController extends Controller
 {
-    /**
-     * @var bool
-     */
-    private static $webhooks_enabled = true;
+    private static bool $webhooks_enabled = true;
 
-    /**
-     * @var string
-     */
-    private static $webhooks_random_code = '';
+    private static string $webhooks_random_code = '';
 
-    /**
-     * @var array
-     */
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'submit' => true
     ];
 
@@ -37,20 +28,21 @@ class WebHookController extends Controller
      * Return link to this controller
      * @return string
      */
+    #[\Override]
     public function Link($action = null)
     {
         if ($link = self::getWebhookURL()) {
             return $link;
         }
+
         return "";
     }
 
     /**
      * Mis-named public method retained for BC
      * @deprecated 1.0
-     * @return string|null
      */
-    public static function getWebookURL() : ?string
+    public static function getWebookURL(): ?string
     {
         return static::getWebhookURL();
     }
@@ -58,19 +50,20 @@ class WebHookController extends Controller
     /**
      * Return the URL (absolute) for webhook submissions
      * If webhooks are not enabled, this will return boolean false
-     * @return string|null
      */
-    public static function getWebhookURL() : ?string
+    public static function getWebhookURL(): ?string
     {
         $enabled = self::config()->get('webhooks_enabled');
         if (!$enabled) {
             return null;
         }
+
         $code = self::config()->get('webhooks_random_code');
         $path = "_datawrapperwebhook/submit/";
         if ($code) {
             $path .= "{$code}/";
         }
+
         return Director::absoluteURL($path);
     }
 
@@ -79,7 +72,7 @@ class WebHookController extends Controller
      * The two keys are 'success' being a boolean, count being the number of items changed
      * @return string JSON encoded value
      */
-    protected function getResponseBody($success = true, $count = 0) : string
+    protected function getResponseBody($success = true, $count = 0): string
     {
         $data = [
             'success' => $success,
@@ -90,9 +83,8 @@ class WebHookController extends Controller
 
     /**
      * We have done something wrong
-     * @return HTTPResponse
      */
-    protected function serverError($status_code = 503, $message = "") : HTTPResponse
+    protected function serverError($status_code = 503, $message = ""): HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(false), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -101,7 +93,6 @@ class WebHookController extends Controller
 
     /**
      * Client (being Mailgun user agent) has done something wrong
-     * @return HTTPResponse
      */
     protected function clientError($status_code  = 400, $message = ""): HTTPResponse
     {
@@ -112,9 +103,8 @@ class WebHookController extends Controller
 
     /**
      * All is good
-     * @return HTTPResponse
      */
-    protected function returnOK($status_code  = 200, $message = "OK", $count = 0) : HTTPResponse
+    protected function returnOK($status_code  = 200, $message = "OK", $count = 0): HTTPResponse
     {
         $response = HTTPResponse::create($this->getResponseBody(true, $count), $status_code);
         $response->addHeader('Content-Type', 'application/json');
@@ -123,32 +113,30 @@ class WebHookController extends Controller
 
     /**
      * Ignore requests to /
-     * @return HTTPResponse
      */
-    public function index($request) : HTTPResponse
+    public function index($request): HTTPResponse
     {
         return $this->clientError(404, "Not Found");
     }
 
     /**
      * Returns whether webhooks are enabled in Configuration
-     * @return bool
      */
-    protected function webhooksEnabled() : bool
+    protected function webhooksEnabled(): bool
     {
         return $this->config()->get('webhooks_enabled');
     }
 
     /**
      * Test whether the random code sent in the request matches what is configured
-     * @return bool
      */
-    protected function webhookRandomCodeMatch(HTTPRequest $request) : bool
+    protected function webhookRandomCodeMatch(HTTPRequest $request): bool
     {
         $code = $this->config()->get('webhooks_random_code');
         if (!$code) {
             return true;
         }
+
         $request_code = $request->param('ID');
         return $request_code == $code;
     }
@@ -157,7 +145,7 @@ class WebHookController extends Controller
      * Primary handler for submitted webooks
      * @throws \Exception
      */
-    public function submit(HTTPRequest $request = null) : HTTPResponse
+    public function submit(HTTPRequest $request = null): HTTPResponse
     {
         try {
             if (!$this->webhooksEnabled()) {
@@ -180,7 +168,7 @@ class WebHookController extends Controller
             }
 
             // POST body
-            $payload = json_decode($request->getBody(), true);
+            $payload = json_decode((string) $request->getBody(), true);
             if (!$payload) {
                 throw new \Exception("No payload found");
             }
@@ -216,8 +204,8 @@ class WebHookController extends Controller
             }
 
             return $this->returnOK(200, "OK", $count);
-        } catch (\Exception $e) {
-            return $this->clientError($e->getCode(), $e->getMessage());
+        } catch (\Exception $exception) {
+            return $this->clientError($exception->getCode(), $exception->getMessage());
         }
     }
 }

@@ -1,5 +1,7 @@
 # Documentation
 
+> This requires the Datawrapper content block to be enabled by a developer.
+
 ## How to create a element
 
 > Audience: content editors, authors and creators
@@ -19,7 +21,10 @@ In the "Share & Embed" section on your chart/map:
 * You will see a URL like "https://datawrapper.dwcdn.net/abcd1/5/"
 
 <img src="../img/url.png" alt="image showing URL to be copied per instructions" style="border:1px solid #000;">
+    
+## Page editing
 
+Add a "Datawrapper visualisation" content block to the Page.
 
 In the "Datawrapper" CMS element you have created, add the  URL value provided. You can right click and copy the URL then paste it in the field.
 
@@ -42,5 +47,7 @@ When a datawrapper element is re-published due to changes, the version will incr
 To update the version on your website, simply set the "Datawrapper version" field to the version you require.
 
 Then save the element to review changes or, optionally, publish.
+
+## Automatic updates on publish
 
 See [webhook setup for options to automatically publish](.002_webhooks.md).
