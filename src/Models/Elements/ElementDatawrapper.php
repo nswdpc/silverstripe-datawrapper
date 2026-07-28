@@ -6,9 +6,9 @@ use Codem\Utilities\HTML5\UrlField;
 use NSWDPC\Datawrapper\WebHookController;
 use NSWDPC\Elemental\Models\Iframe\ElementIframe;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\RequiredFields;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\View\ArrayData;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
+use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\View\Requirements;
 
 /**
@@ -33,7 +33,7 @@ class ElementDatawrapper extends ElementIframe
 
     private static string $title = 'Datawrapper visualisation';
 
-    private static string $description = 'Display a Datawrapper visualisation';
+    private static string $class_description = 'Display a Datawrapper visualisation';
 
     private static string $default_host = 'datawrapper.dwcdn.net';
 
@@ -72,7 +72,7 @@ class ElementDatawrapper extends ElementIframe
      * Apply requirements when templating
      */
     #[\Override]
-    public function forTemplate($holder = true)
+    public function forTemplate($holder = true): string
     {
         Requirements::customScript(
             ArrayData::create([])->renderWith('NSWDPC/Elemental/Models/Datawrapper/ResponsiveScript'),
@@ -94,7 +94,7 @@ class ElementDatawrapper extends ElementIframe
         parent::onBeforeWrite();
         $this->IsFullWidth = 1;//DW elements are always full width
         $this->Width = "100%";// DW elements are always full width
-        $this->IsResponsive = 1;//DW elements are always responsive
+        $this->IsResponsive = '4x3';//DW elements are always responsive
         $this->URLID = 0;// DW URLs are generated based on the provided embed URL, link module not used
         $this->IsDynamic = 0;// iframe module turn off IsDynamic, DW provides its own.
         $this->setPartsFromUrl();
@@ -181,7 +181,7 @@ class ElementDatawrapper extends ElementIframe
      */
     public function getCMSValidator()
     {
-        return RequiredFields::create(['InputURL']);
+        return RequiredFieldsValidator::create(['InputURL']);
     }
 
     /**

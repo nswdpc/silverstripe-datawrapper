@@ -145,7 +145,7 @@ class WebHookController extends Controller
      * Primary handler for submitted webooks
      * @throws \Exception
      */
-    public function submit(HTTPRequest $request = null): HTTPResponse
+    public function submit(?HTTPRequest $request = null): HTTPResponse
     {
         try {
             if (!$this->webhooksEnabled()) {

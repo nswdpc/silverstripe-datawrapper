@@ -60,8 +60,8 @@ class DatawrapperTest extends SapphireTest
      */
     public function testIframe(): void
     {
-        $width = 300;
-        $height = 200;
+        $width = '300';
+        $height = '200';
 
         $record = $this->createTestRecord();
         $record->DatawrapperId = 'test1';
