@@ -33,12 +33,6 @@
         "phpstan/phpstan-phpunit": "^2",
         "rector/rector": "^2"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/nswdpc/silverstripe-link.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "NSWDPC\\Datawrapper\\": [
