@@ -47,8 +47,8 @@ class DatawrapperWebhookTest extends FunctionalTest
      */
     public function testWebHook(): void
     {
-        $width = 300;
-        $height = 200;
+        $width = '300';
+        $height = '200';
 
         $datawrapperId = 'hook1';
 
@@ -133,8 +133,8 @@ class DatawrapperWebhookTest extends FunctionalTest
      */
     public function testWebHookAvoidRollback(): void
     {
-        $width = 300;
-        $height = 200;
+        $width = '300';
+        $height = '200';
 
         $datawrapperId = 'hook1';
 
