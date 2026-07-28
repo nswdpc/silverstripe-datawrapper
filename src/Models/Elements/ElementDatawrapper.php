@@ -94,7 +94,7 @@ class ElementDatawrapper extends ElementIframe
         parent::onBeforeWrite();
         $this->IsFullWidth = 1;//DW elements are always full width
         $this->Width = "100%";// DW elements are always full width
-        $this->IsResponsive = 1;//DW elements are always responsive
+        $this->IsResponsive = '4x3';//DW elements are always responsive
         $this->URLID = 0;// DW URLs are generated based on the provided embed URL, link module not used
         $this->IsDynamic = 0;// iframe module turn off IsDynamic, DW provides its own.
         $this->setPartsFromUrl();
